@@ -122,11 +122,15 @@ const sketch = (p: p5): any => {
       this.circle(circle.x, circle.y, circle.radius * 2)
       for (let i = 0; i < SLICES; i++) {
         for (let i = 0; i < SLICES; i++) {
-          this.line(
-            circle.x,
-            circle.y,
-            circle.x + get_x_dist(radian, circle.radius),
-            circle.y + get_y_dist(radian, circle.radius)
+          draw_line_mx_b(
+            {
+              x: circle.x,
+              y: circle.y,
+            },
+            {
+              x: circle.x + get_x_dist(radian, circle.radius),
+              y: circle.y + get_y_dist(radian, circle.radius)
+            }
           )
           radian += (360 / SLICES) * Math.PI / 180
         }
