@@ -107,6 +107,56 @@ const sketch = (p: p5): any => {
     }
   }
 
+  function draw_line_bresenham(point_a: Vector2, point_b: Vector2) {
+
+    point_a.x = Math.round(point_a.x);
+    point_a.y = Math.round(point_a.y);
+    point_b.x = Math.round(point_b.x);
+    point_b.y = Math.round(point_b.y);
+
+    let dx = Math.abs(point_b.x - point_a.x);
+    let dy = Math.abs(point_b.y - point_a.y);
+    let sx = (point_a.x < point_b.x) ? 1 : -1;
+    let sy = (point_a.y < point_b.y) ? 1 : -1;
+    let err = dx - dy;
+
+    while (true) {
+      p.point(point_a.x, point_a.y);
+      if (point_a.x === point_b.x && point_a.y === point_b.y) break;
+      let e2 = 2 * err;
+      if (e2 > -dy) {
+        err -= dy;
+        point_a.x += sx;
+      }
+      if (e2 < dx) {
+        err += dx;
+        point_a.y += sy;
+      }
+    }
+
+  }
+
+  function draw_line_dda(point_a: Vector2, point_b: Vector2) {
+    p.stroke(0, 150, 255);
+    p.strokeWeight(2);
+
+    let dx = point_b.x - point_a.x;
+    let dy = point_b.y - point_a.y;
+    let steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+    let xInc = dx / steps;
+    let yInc = dy / steps;
+
+    let x = point_a.x;
+    let y = point_a.y;
+
+    for (let i = 0; i <= steps; i++) {
+      p.point(x, y);
+      x += xInc;
+      y += yInc;
+    }
+  }
+
   function get_x_dist(degree: number, hip: number) {
     return Math.cos(degree) * hip
   }
@@ -122,16 +172,40 @@ const sketch = (p: p5): any => {
       this.circle(circle.x, circle.y, circle.radius * 2)
       for (let i = 0; i < SLICES; i++) {
         for (let i = 0; i < SLICES; i++) {
-          draw_line_mx_b(
-            {
-              x: circle.x,
-              y: circle.y,
-            },
-            {
-              x: circle.x + get_x_dist(radian, circle.radius),
-              y: circle.y + get_y_dist(radian, circle.radius)
-            }
-          )
+          if (i % 2 == 0) {
+            draw_line_mx_b(
+              {
+                x: circle.x,
+                y: circle.y,
+              },
+              {
+                x: circle.x + get_x_dist(radian, circle.radius),
+                y: circle.y + get_y_dist(radian, circle.radius)
+              }
+            )
+          } else if (i % 3 == 0) {
+            draw_line_bresenham(
+              {
+                x: circle.x,
+                y: circle.y,
+              },
+              {
+                x: circle.x + get_x_dist(radian, circle.radius),
+                y: circle.y + get_y_dist(radian, circle.radius)
+              }
+            )
+          } else {
+            draw_line_dda(
+              {
+                x: circle.x,
+                y: circle.y,
+              },
+              {
+                x: circle.x + get_x_dist(radian, circle.radius),
+                y: circle.y + get_y_dist(radian, circle.radius)
+              }
+            )
+          }
           radian += (360 / SLICES) * Math.PI / 180
         }
       }
