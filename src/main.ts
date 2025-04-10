@@ -165,11 +165,45 @@ const sketch = (p: p5): any => {
     return Math.sin(degree) * hip
   }
 
+  function drawMidpointCircle(xc, yc, r) {
+    let x = 0;
+    let y = r;
+    let p = 1 - r;
+
+    drawCirclePoints(xc, yc, x, y);
+
+    while (x <= y) {
+        x++;
+
+        if (p < 0) {
+            p += 2 * x + 1;
+        } else {
+            y--;
+            p += 2 * (x - y) + 1;
+        }
+
+        drawCirclePoints(xc, yc, x, y);
+    }
+}
+
+function drawCirclePoints(xc, yc, x, y) {
+    p.point(xc + x, yc + y);
+    p.point(xc + y, yc + x);
+    p.point(xc - x, yc + y);
+    p.point(xc - y, yc + x);
+    p.point(xc - x, yc - y);
+    p.point(xc - y, yc - x);
+    p.point(xc + x, yc - y);
+    p.point(xc + y, yc - x);
+}
+
+
   p.draw = function() {
+    this.background(100)
     let radian = (360 / SLICES) * Math.PI / 180
     this.stroke("pink")
     circles.forEach(circle => {
-      this.circle(circle.x, circle.y, circle.radius * 2)
+    drawMidpointCircle(circle.x, circle.y, circle.radius)
       for (let i = 0; i < SLICES; i++) {
         for (let i = 0; i < SLICES; i++) {
           if (i % 2 == 0) {
@@ -217,3 +251,4 @@ const sketch = (p: p5): any => {
 }
 
 new p5(sketch);
+
